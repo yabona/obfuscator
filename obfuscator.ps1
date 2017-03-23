@@ -8,6 +8,9 @@
 # Load wordlist from Git page...
 [System.Collections.ArrayList]$wordList = (Invoke-WebRequest -Uri https://raw.githubusercontent.com/yabona/obfuscator/master/topsearches.txt).content.split("`n")
 
+# add top sites to list
+$wordList += (Invoke-WebRequest -Uri https://raw.githubusercontent.com/yabona/obfuscator/master/top500sites).content.split('`n')
+
 # Open IE object and position on screen
 $iexplore = New-Object -ComObject internetExplorer.application 
 $iexplore.visible = $true
