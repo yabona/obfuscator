@@ -46,6 +46,7 @@ while ($true) {
        Write-Verbose "click $i done;" -Verbose
     }
     Write-Output "Done. Proceeding to next search...`n" -Verbose
+    Start-Sleep (4..12|Get-Random)
 }
 
 #unreacable, hahahahaha
