@@ -1,8 +1,19 @@
-# Load wordlist from Git page...
-[System.Collections.ArrayList]$wordList = (Invoke-WebRequest -Uri https://raw.githubusercontent.com/yabona/obfuscator/master/topsearches.txt).content.split("`n")
+# ** ** ** ** ** ** ** ** ** ** **
+# make my browsing data useless ::
+# holla ya boi yabones 2017     ::
+# .. .. .. .. .. .. .. .. .. .. ::
 
-# 100x more word in this one. 
-#$wordList = (Invoke-WebRequest -Uri https://raw.githubusercontent.com/yabona/obfuscator/master/SERP_top).content.split("`n")
+param (
+    [switch]$useSERP = $false
+)
+
+# Load wordlist from Git page...
+if ($useSERP) {
+    [System.Collections.ArrayList]$wordList = (Invoke-WebRequest -Uri https://raw.githubusercontent.com/yabona/obfuscator/master/SERP_top).content.split("`n")
+    Write-Warning "This may be slower on devices that can't handle 50k..." 
+} else {
+    [System.Collections.ArrayList]$wordList = (Invoke-WebRequest -Uri https://raw.githubusercontent.com/yabona/obfuscator/master/topsearches.txt).content.split("`n")
+}
 
 # add top sites to list
 $wordList += (Invoke-WebRequest -Uri https://raw.githubusercontent.com/yabona/obfuscator/master/top500sites).content.split("`n")
