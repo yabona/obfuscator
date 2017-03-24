@@ -1,10 +1,3 @@
-# ** ** ** ** ** ** ** ** ** ** **
-# make my browsing data useless ::
-# holla ya boi yabones 2017     ::
-# .. .. .. .. .. .. .. .. .. .. ::
-
-# license: free as in freedom SHOUT OUT to muh boi Stallman GPL3 Biii--ch
-
 # Load wordlist from Git page...
 [System.Collections.ArrayList]$wordList = (Invoke-WebRequest -Uri https://raw.githubusercontent.com/yabona/obfuscator/master/topsearches.txt).content.split("`n")
 
@@ -31,7 +24,7 @@ while ($true) {
     # open IE and start search 
     $iexplore.navigate($search)
     Write-Verbose "Goto: $search" -Verbose
-    while ($iexplore.busy) {start-sleep -m 200}
+    while ($iexplore.busy) {start-sleep -m 200}; Start-Sleep (3..7|Get-Random)
 
 
     # Click links within search results, between 1 and 3 times
@@ -42,17 +35,35 @@ while ($true) {
         $elements = $iexplore.Document.getElementsByTagName("A") 
         $target =  ($elements | ? {$_.host -notlike "*google*"} | select -Index (10..20|Get-Random))
         $target.click()
-        while ($iexplore.busy) {start-sleep -m 200}
-        
-        # wait, then go back to search results...
-        Start-Sleep (3..10|Get-Random)
-        $iexplore.GoBack()
-        while ($iexplore.busy) {start-sleep -m 200}
 
-       Write-Verbose "click $i done;" -Verbose
+        # 50% chance of hitting a subpage...
+        if($true,$false|Get-random) {
+            while ($iexplore.busy) {start-sleep -m 200}
+            Start-Sleep (4..10|Get-Random)
+            Write-Verbose "Browsing subpage..." -Verbose
+
+            $elements = $iexplore.Document.getElementsByTagName("A") 
+            $target = ($elements | ? {$_.href -like "http*"})| select -index (2..15|Get-Random)
+            $Target.click()
+
+            while ($iexplore.busy) {start-sleep -m 200}
+            Start-Sleep (4..10|Get-Random)
+            Write-Verbose "Back..." -Verbose
+            $iexplore.GoBack()
+        }
+
+        #go back to search results...
+        while ($iexplore.busy) {start-sleep -m 200}
+        Start-Sleep (4..10|Get-Random)
+        $iexplore.GoBack()
+
+        Write-Verbose "click $i done;" -Verbose
+        
+        while ($iexplore.busy) {start-sleep -m 200}
+        Start-Sleep (4..10|Get-Random)
     }
     Write-Output "Done. Proceeding to next search...`n" -Verbose
-    Start-Sleep (4..12|Get-Random)
+    Start-Sleep (4..9|Get-Random)
 }
 
 #unreacable, hahahahaha
