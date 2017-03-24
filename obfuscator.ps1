@@ -35,7 +35,8 @@ while ($true) {
     # open IE and start search 
     $iexplore.navigate($search)
     Write-Verbose "Goto: $search" -Verbose
-    while ($iexplore.busy) {start-sleep -m 200}; Start-Sleep (3..7|Get-Random)
+    while ($iexplore.busy) {start-sleep -m 200}
+    Start-Sleep (3..7|Get-Random)
 
 
     # Click links within search results, between 1 and 3 times
