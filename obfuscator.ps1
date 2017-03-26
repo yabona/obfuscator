@@ -1,4 +1,4 @@
-# ** ** ** ** ** ** ** ** ** ** **
+﻿# ** ** ** ** ** ** ** ** ** ** **
 # make my browsing data useless ::
 # holla ya boi yabones 2017     ::
 # .. .. .. .. .. .. .. .. .. .. ::
@@ -19,67 +19,17 @@ if ($useSERP) {
 # add top sites to list
 $wordList += (Invoke-WebRequest -Uri https://raw.githubusercontent.com/yabona/obfuscator/master/top500sites).content.split("`n")
 
-function clickLink 
-{
-    $elements = $iexplore.Document.getElementsByTagName("A") 
-    $target =  ($elements | ? {$_.host -notlike "*google*" -and $_.href -like "http*"} | select -Index (10..20|Get-Random))
-    Write-Verbose "$($target.href)" -Verbose
-    try { $target.click() } 
-    catch { Write-Warning "Click failed! Retrying..." }
-}
 
-# loop main
-while ($true) 
-{   # todo: add more search engines... Meh, another day old lad. 
-   
-    # Keyword add
-    $search = "https://google.com/search?q=" +  [string]($wordlist[(Get-random -Maximum $wordlist.count)]).replace(' ','%20')
+# main loop start: 
+while($true) {
+    $keyword = [string]($wordlist[(Get-random -Maximum $wordlist.count)]).replace(' ','%20')
+    
+    Write-Verbose "$keyword" -Verbose
+    start-job -FilePath .\searchBot.ps1 -ArgumentList $keyword -name $keyword
      
-    # Open IE object and position on screen
-    $iexplore = New-Object -ComObject internetExplorer.application 
-    $iexplore.visible = $true
-    $iexplore.width = 640
-    $iexplore.Height = 480
+    Get-Job | Wait-Job -Timeout 90
 
-    Write-Verbose "Goto: $search" -Verbose
-    $iexplore.navigate($search)
-    while ($iexplore.busy) {start-sleep -m 200}; Start-Sleep (3..7|Get-Random)
+    Get-Process iexplore | % {stop-process -force -id $_.id }
 
-    # Click links within search results, between 1 and 3 times
-    for ($i = 0; $i -lt (1..3|Get-random); $i ++) {
-        Write-Verbose "Click $i start..." -Verbose
-
-        # Select <a href> randomly, from search results. Click it. 
-        clickLink 
-
-        # 50% chance of hitting a subpage...
-        if($true,$false|Get-random) {
-            while ($iexplore.busy) {start-sleep -m 200}
-            Start-Sleep (4..10|Get-Random)
-            Write-Verbose "Browsing subpage..." -Verbose
-
-            clickLink 
-
-            while ($iexplore.busy) {start-sleep -m 200}
-            Start-Sleep (4..10|Get-Random)
-            Write-Verbose "Back..." -Verbose
-            try { $iexplore.GoBack() }
-            catch {Write-Verbose "Back failed!"}
-        }
-
-        #go back to search results...
-        while ($iexplore.busy) {start-sleep -m 200}
-        Start-Sleep (4..10|Get-Random)
-        try { $iexplore.GoBack() }
-        catch {Write-Verbose "Back failed!"}
-
-        Write-Verbose "click $i done;" -Verbose
-        
-        while ($iexplore.busy) {start-sleep -m 200}
-        Start-Sleep (4..10|Get-Random)
-    }
-    Write-Output "Done. Proceeding to next search...`n" -Verbose
-
-    $iexplore.quit
-    Get-Process iexplore | % { $_.CloseMainWindow() }
+    Get-job | Remove-Job -force
 }
