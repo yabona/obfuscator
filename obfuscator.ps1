@@ -1,10 +1,12 @@
-﻿# ** ** ** ** ** ** ** ** ** ** **
+# ** ** ** ** ** ** ** ** ** ** **
 # make my browsing data useless ::
 # holla ya boi yabones 2017     ::
 # .. .. .. .. .. .. .. .. .. .. ::
 
 param (
-    [switch]$useSERP = $false
+    [switch]$useSERP = $false, 
+    [switch]$useEchelon = $false, 
+    [switch]$useTopSites = $true
 )
     
 
@@ -16,9 +18,15 @@ if ($useSERP) {
     [System.Collections.ArrayList]$wordList = (Invoke-WebRequest -Uri https://raw.githubusercontent.com/yabona/obfuscator/master/topsearches.txt).content.split("`n")
 }
 
-# add top sites to list
-$wordList += (Invoke-WebRequest -Uri https://raw.githubusercontent.com/yabona/obfuscator/master/top500sites).content.split("`n")
+# Add Echelon keylist to search 
+if($useEchelon) {
+    $wordlist += (Invoke-Webrequest -Uri https://raw.githubusercontent.com/yabona/obfuscator/master/echelon).content.split(',').trim() 
+}
 
+# add Top Sites to list
+if($useTopSites) {
+    $wordList += (Invoke-WebRequest -Uri https://raw.githubusercontent.com/yabona/obfuscator/master/top500sites).content.split("`n").trim()
+}
 
 # main loop start: 
 while($true) {
