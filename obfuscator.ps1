@@ -33,7 +33,7 @@ while($true) {
     $keyword = [string]($wordlist[(Get-random -Maximum $wordlist.count)]).replace(' ','%20')
     
     Write-Verbose "$keyword" -Verbose
-    start-job -FilePath .\searchBot.ps1 -ArgumentList $keyword -name $keyword
+    start-job -FilePath $PSScriptRoot\searchBot.ps1 -ArgumentList $keyword -name $keyword
      
     Get-Job | Wait-Job -Timeout 90
 
